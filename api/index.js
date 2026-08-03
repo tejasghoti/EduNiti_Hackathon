@@ -1,4 +1,4 @@
-// Vercel Serverless API Handler for EduNiti Demo / Cloud Deployment
+// Vercel & Node Serverless API Handler for EduNiti Demo / Cloud Deployment
 
 const mockUser = {
   id: "usr_8829a",
@@ -107,6 +107,28 @@ let cacheStatsData = {
 };
 
 export default function handler(req, res) {
+  // Polyfill status & json helpers for raw Node HTTP ServerResponse compatibility
+  if (typeof res.status !== 'function') {
+    res.status = function (statusCode) {
+      res.statusCode = statusCode;
+      return res;
+    };
+  }
+
+  if (typeof res.json !== 'function') {
+    res.json = function (data) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(data));
+      return res;
+    };
+  }
+
+  // Read body if POST
+  let body = {};
+  if (req.body) {
+    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+  }
+
   // CORS Headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
@@ -119,54 +141,64 @@ export default function handler(req, res) {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const path = url.pathname;
 
+  const userObj = {
+    ...mockUser,
+    email: body.email || mockUser.email,
+    name: body.name || mockUser.name
+  };
+
   // Route matching
   if (path === "/api/auth/login" || path === "/api/auth/register") {
     return res.status(200).json({
-      token: "demo-jwt-token-eduniti-hackathon-winner",
-      user: mockUser
+      data: {
+        token: "demo-jwt-token-eduniti-hackathon-winner",
+        user: userObj
+      }
     });
   }
 
   if (path === "/api/auth/me") {
-    return res.status(200).json({ user: mockUser });
+    return res.status(200).json({ data: userObj });
   }
 
   if (path === "/api/student/profile") {
-    return res.status(200).json(mockProfile);
+    return res.status(200).json({ data: { ...mockProfile, email: userObj.email, name: userObj.name } });
   }
 
   if (path === "/api/student/results") {
-    return res.status(200).json(mockResults);
+    return res.status(200).json({ data: mockResults });
   }
 
   if (path === "/api/student/sessions") {
-    return res.status(200).json(mockSessions);
+    return res.status(200).json({ data: mockSessions });
   }
 
   if (path === "/api/student/upcoming-tests") {
-    return res.status(200).json(mockUpcomingTests);
+    return res.status(200).json({ data: mockUpcomingTests });
   }
 
   if (path === "/api/test/live" || path.startsWith("/api/test/test_live_01") || path.match(/\/api\/test\/[^\/]+$/)) {
     cacheStatsData.hits += 1;
     cacheStatsData.totalRequests += 1;
     cacheStatsData.hitRatioPercent = parseFloat(((cacheStatsData.hits / cacheStatsData.totalRequests) * 100).toFixed(2));
-    return res.status(200).json(mockLiveTest);
+    return res.status(200).json({ data: mockLiveTest });
   }
 
   if (path.includes("/submit")) {
     return res.status(200).json({
-      score: 100,
-      totalQuestions: 4,
-      correctAnswers: 4,
-      percentage: 100,
-      message: "Test submitted successfully! Perfect score!",
-      submittedAt: new Date().toISOString()
+      data: {
+        score: 100,
+        totalQuestions: 4,
+        correctAnswers: 4,
+        percentage: 100,
+        message: "Test submitted successfully! Perfect score!",
+        submittedAt: new Date().toISOString()
+      }
     });
   }
 
   if (path === "/api/test/cache/stats") {
-    return res.status(200).json(cacheStatsData);
+    return res.status(200).json({ data: cacheStatsData });
   }
 
   if (path === "/api/test/cache/reset") {
@@ -179,8 +211,8 @@ export default function handler(req, res) {
       redisMemoryUsage: "2.1 MB",
       keysCount: 0
     };
-    return res.status(200).json({ message: "Cache stats reset successfully", stats: cacheStatsData });
+    return res.status(200).json({ data: cacheStatsData, message: "Cache stats reset successfully" });
   }
 
-  return res.status(200).json({ status: "OK", message: "EduNiti API Gateway operational", timestamp: new Date().toISOString() });
+  return res.status(200).json({ data: { status: "OK", message: "EduNiti API Gateway operational", timestamp: new Date().toISOString() } });
 }

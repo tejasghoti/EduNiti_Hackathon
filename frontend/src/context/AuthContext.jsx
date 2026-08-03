@@ -17,25 +17,31 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         if (!token) { setLoading(false); return; }
         authApi.me()
-            .then((res) => setUser(res.data))
+            .then((res) => setUser(res.data?.user || res.data || res.user))
             .catch(() => { setToken(null); sessionStorage.removeItem('xenia_token'); })
             .finally(() => setLoading(false));
     }, []);
 
     const login = useCallback(async (email, password) => {
         const res = await authApi.login(email, password);
-        setToken(res.data.token);
-        setUser(res.data.user);
-        sessionStorage.setItem('xenia_token', res.data.token);
-        return res.data;
+        const payload = res.data || res;
+        const authToken = payload.token || res.token;
+        const authUser = payload.user || res.user;
+        setToken(authToken);
+        setUser(authUser);
+        if (authToken) sessionStorage.setItem('xenia_token', authToken);
+        return payload;
     }, []);
 
     const register = useCallback(async (email, name, password) => {
         const res = await authApi.register(email, name, password);
-        setToken(res.data.token);
-        setUser(res.data.user);
-        sessionStorage.setItem('xenia_token', res.data.token);
-        return res.data;
+        const payload = res.data || res;
+        const authToken = payload.token || res.token;
+        const authUser = payload.user || res.user;
+        setToken(authToken);
+        setUser(authUser);
+        if (authToken) sessionStorage.setItem('xenia_token', authToken);
+        return payload;
     }, []);
 
     const logout = useCallback(() => {
