@@ -12,6 +12,14 @@ Traditional online test platforms crash during synchronized exam starts due to d
 
 ---
 
+## 📺 Project Demo Video
+
+[![EduNiti Demo Video](https://img.youtube.com/vi/BTR5NdkznFM/hqdefault.jpg)](https://www.youtube.com/watch?v=BTR5NdkznFM)
+
+> 🎥 **[Watch Full Video Demo on YouTube](https://www.youtube.com/watch?v=BTR5NdkznFM)** | Studio Link: [BTR5NdkznFM](https://studio.youtube.com/video/BTR5NdkznFM)
+
+---
+
 ## 💡 The Problem & How EduNiti Solves It
 
 ### The Problem:
@@ -94,8 +102,8 @@ Traditional online test platforms crash during synchronized exam starts due to d
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/KshitijDatir/EduNiti.git
-cd EduNiti
+git clone https://github.com/tejasghoti/EduNiti_Hackathon.git
+cd EduNiti_Hackathon
 ```
 
 ### Step 2: Start Backend Infrastructure (Docker Compose)
