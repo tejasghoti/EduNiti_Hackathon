@@ -66,12 +66,12 @@ export async function getTestById(testId: string): Promise<TestResponse | null> 
     const response: TestResponse = {
         id: test.id,
         title: test.title,
-        questions: test.questions.map((q) => ({
+        questions: test.questions.map((q: any) => ({
             id: q.id,
             questionText: q.questionText,
             mediaUrl: q.mediaUrl,
             mediaType: q.mediaType,
-            options: q.options.map((o) => ({
+            options: q.options.map((o: any) => ({
                 id: o.id,
                 text: o.text,
             })),

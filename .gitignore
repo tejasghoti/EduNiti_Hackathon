@@ -36,3 +36,5 @@ backend/services/**/node_modules/
 backend/services/**/dist/
 backend/*.json # Temporary test files like login.json, register.json
 *.sql # Temporary SQL queries
+*.tsbuildinfo
+
