@@ -165,5 +165,5 @@ EduNiti is pre-configured for instant deployment on **Vercel** with a built-in s
 
 ## 📜 License & Acknowledgments
 
-Built with ❤️ by **Kshitij Datir** for **Xenia '26 Hackathon** (Winning Entry 🏆).  
+Built with ❤️ 
 Licensed under the MIT License.
